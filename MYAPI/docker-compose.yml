@@ -1,0 +1,8 @@
+services:
+  api:
+    build: .
+    container_name: server_fastAPI
+    ports:
+      - "8008:8008"
+    volumes:
+      - ./app:/app/app
