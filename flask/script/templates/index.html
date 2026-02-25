@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Usuarios</title>
+</head>
+<body>
+    <h1>Lista de Usuarios desde FastAPI</h1>
+    
+    <h3>Agregar Nuevo Usuario</h3>
+    <form action="/agregar" method="POST">
+        <input type="number" name="id" placeholder="ID del usuario" required>
+        <input type="text" name="nombre" placeholder="Nombre" required>
+        <input type="number" name="edad" placeholder="Edad" required>
+        <button type="submit" style="background-color: lightgreen;">Agregar Usuario</button>
+    </form>
+
+    <br><hr><br>
+
+    <table border="1" cellpadding="8">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Edad</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for usr in usuarios %}
+            <tr>
+                <td>{{ usr.id }}</td>
+                <td>{{ usr.nombre }}</td>
+                <td>{{ usr.edad }}</td>
+                <td>
+                    <form action="/actualizar/{{ usr.id }}" method="POST" style="display:inline;">
+                        <input type="hidden" name="nuevo_id" value="{{ usr.id }}">
+                        <input type="text" name="nuevo_nombre" value="{{ usr.nombre }}" required>
+                        <input type="number" name="nueva_edad" value="{{ usr.edad }}" required style="width: 50px;">
+                        <button type="submit" style="background-color: lightblue;">Actualizar</button>
+                    </form>
+
+                    <form action="/eliminar/{{ usr.id }}" method="POST" style="display:inline;">
+                        <button type="submit" style="background-color: salmon;">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4">No hay usuarios disponibles o la API está desconectada.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

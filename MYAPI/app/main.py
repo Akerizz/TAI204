@@ -2,7 +2,13 @@
 from fastapi import FastAPI, status, HTTPException
 import asyncio
 from typing import Optional
+from pydantic import BaseModel,Field
 
+
+class crear_usuario(BaseModel):
+    id:int = Field(..., gt=0, description="identificador de usuario")
+    nombre:str= Field(...,min_length=3, max_length=50, example="Joohn Doe")
+    edad:int=Field(...,gt=1,le=125,description="edad valida entre 1 y 125")
 
 #instancias
 app = FastAPI(
@@ -62,21 +68,20 @@ async def consultaT():
         "Usuarios":usuarios
     }
 
-@app.post("/v1/ParametroOP/", tags=["Crud HTTP"]) 
-async def Agregar_usuario(usuario: dict):
+@app.post("/v1/usuarios/",tags=['CRUD HTTP'])  
+async def agregar_usuario(usuario:crear_usuario):
     for usr in usuarios:
-        if usr["id"] == usuario.get("id"):
+        if usr["id"] == usuario.id:
             raise HTTPException(
-                status_code=400,
-                detail="El usuario ya existe"
-                )
-        
-        usuarios.append(usuarios)
-        return{
-            "mensaje": "Usuario agregado",
-            "usuario": usuario,
-            "status": 200
-        }
+                status_code=400, 
+                  detail="el id ya existe"
+            )
+    usuarios.append(usuario.dict())
+    return{
+        "mensaje":"usuario agregado",
+        "Usuario" :usuario,
+        "status":"200"
+    }
     
 
 @app.put("/v1/usuario/", tags=["Crud HTTP"])
