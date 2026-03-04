@@ -1,8 +1,12 @@
 #importaciones
-from fastapi import FastAPI, status, HTTPException
+from fastapi import FastAPI, status, HTTPException,Depends
 import asyncio
 from typing import Optional
-from pydantic import BaseModel,Field
+from pydantic import BaseModel, Field
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+import secrets
+
+
 
 
 class crear_usuario(BaseModel):
@@ -23,8 +27,25 @@ usuarios=[
     {"id":1, "nombre":"Jorge", "edad":21},
     {"id":2, "nombre":"Maria", "edad":28},
     {"id":3, "nombre":"Betito", "edad":30}
-   
 ]
+
+security = HTTPBasic() 
+def verificar_peticion(credentials: HTTPBasicCredentials = Depends(security)):
+
+    usuarioAuth = secrets.compare_digest(credentials.username, "Marron")
+    contraAuth = secrets.compare_digest(credentials.password, "123456")
+
+    if not (usuarioAuth and contraAuth):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Credenciales no Autorizadas",
+        )
+    
+    return credentials.username
+
+
+
+
 #Endpoints
 @app.get("/", tags=["Inicio"]) 
 async def Bienvenidos():
@@ -68,7 +89,7 @@ async def consultaT():
         "Usuarios":usuarios
     }
 
-@app.post("/v1/usuarios/",tags=['CRUD HTTP'])  
+@app.post("/v1/usuarios/",tags=['Crud HTTP'])  
 async def agregar_usuario(usuario:crear_usuario):
     for usr in usuarios:
         if usr["id"] == usuario.id:
@@ -103,7 +124,7 @@ async def Actualizar_usuario(usuario_actualizado: dict, id: Optional[int] = None
 
 
 @app.delete("/v1/usuario/", tags=["Crud HTTP"])
-async def Eliminar_usuario(id: Optional[int] = None):
+async def Eliminar_usuario(id: int, usuarioAuth: str = Depends(verificar_peticion)):
     if id is None:
         raise HTTPException(status_code=400, detail="Proporciona una ID para eliminar")
 
@@ -111,7 +132,7 @@ async def Eliminar_usuario(id: Optional[int] = None):
         if usr["id"] == id:
             usuarios.pop(index)
             return {
-                "mensaje": "Usuario eliminado correctamente",
+                "mensaje": f"Usuario eliminado correctamente {usuarioAuth}",
                 "status": 200
             }
             
