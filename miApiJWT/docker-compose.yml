@@ -1,0 +1,8 @@
+services:
+  api:
+    build: .
+    container_name: server_fastAPI_JWT
+    ports:
+      - "8010:8008"
+    volumes:
+      - ./app:/app/app

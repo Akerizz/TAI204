@@ -4,7 +4,7 @@ import requests
 app = Flask(__name__)
 
 # URL base de tu FastAPI en Docker
-API_URL = "http://localhost:8008/v1"
+API_URL = "http://localhost:8000/v1"
 
 @app.route("/")
 def index():
