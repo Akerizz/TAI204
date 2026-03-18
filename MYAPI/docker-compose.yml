@@ -1,7 +1,7 @@
 services:
   api:
     build: .
-    container_name: server_fastAPI
+    container_name: server_fastAPI_Mercy
     ports:
       - "8008:8008"
     volumes:
