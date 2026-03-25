@@ -1,9 +1,11 @@
 #importaciones
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI
 from app.routers import usuarios, varios
+from app.data.db import engine
+from app.data import usuario
 
 
-
+usuario.base.metadata.create_all(bind=engine) #creacion de tablas en la base de datos
 
 
 #instancias
